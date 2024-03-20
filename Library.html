@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        input[type="text"] {
+            width: calc(100% - 10px);
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .book {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+        }
+        
+        .search {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Library Management System</h1>
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <button onclick="searchBooks()">Search</button>
+        </div>
+        <div class="books-container" id="booksContainer">
+            <!-- Books will be dynamically added here -->
+        </div>
+        <form id="addBookForm">
+            <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="author" placeholder="Author" required>
+            <button type="submit">Add Book</button>
+        </form>
+    </div>
+    <script>
+        let books = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBooks();
+            const addBookForm = document.getElementById('addBookForm');
+
+            addBookForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const title = document.getElementById('title').value;
+                const author = document.getElementById('author').value;
+
+                if (title && author) {
+                    addBook(title, author);
+                    addBookForm.reset();
+                } else {
+                    alert('Please fill in both title and author fields.');
+                }
+            });
+        });
+
+        function addBook(title, author) {
+            const newBook = { title, author };
+            books.push(newBook);
+            displayBooks();
+        }
+
+        function displayBooks() {
+            const booksContainer = document.getElementById('booksContainer');
+            booksContainer.innerHTML = '';
+            books.forEach((book, index) => {
+                const bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `
+                    <h3>${book.title}</h3>
+                    <p>By ${book.author}</p>
+                    <button onclick="deleteBook(${index})">Delete</button>
+                `;
+                booksContainer.appendChild(bookDiv);
+            });
+        }
+
+        function deleteBook(index) {
+            books.splice(index, 1);
+            displayBooks();
+        }
+
+        function searchBooks() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filteredBooks = books.filter(book => 
+                book.title.toLowerCase().includes(searchInput) || 
+                book.author.toLowerCase().includes(searchInput)
+            );
+            displayFilteredBooks(filteredBooks);
+        }
+
+        function displayFilteredBooks(filteredBooks) {
+            const booksContainer = document.getElementById('booksContainer');
+            booksContainer.innerHTML = '';
+            filteredBooks.forEach(book => {
+                const bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `
+                    <h3>${book.title}</h3>
+                    <p>By ${book.author}</p>
+                `;
+                booksContainer.appendChild(bookDiv);
+            });
+        }
+
+        function loadBooks() {
+            // Here you can load books from a database or local storage if available
+            // For this example, we initialize an empty list
+            // books = localStorage.getItem('books') ? JSON.parse(localStorage.getItem('books')) : [];
+            displayBooks();
+        }
+
+        // Save books to local storage whenever books array changes
+        // You can uncomment this code if you want to save books to local storage
+        // function saveBooks() {
+        //     localStorage.setItem('books', JSON.stringify(books));
+        // }
+        // window.addEventListener('unload', saveBooks);
+    </script>
+</body>
+</html>
